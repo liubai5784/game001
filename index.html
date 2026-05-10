@@ -1,1442 +1,647 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>星域祈愿 - 抽卡模拟器</title>
-    <style>
-        :root {
-            --bg-deep: #0a0a14;
-            --bg-card: #1a1a2e;
-            --bg-panel: #141428;
-            --gold: #f0c060;
-            --gold-dark: #b8943a;
-            --gold-light: #ffe9b0;
-            --purple: #b880e0;
-            --purple-dark: #6a3d99;
-            --purple-light: #d4b8f0;
-            --blue: #5b9bd5;
-            --blue-dark: #3a6d99;
-            --blue-light: #a8d0f0;
-            --text: #e0d8c8;
-            --text-dim: #9a9488;
-            --star-5: #f7c948;
-            --star-4: #c882f0;
-            --star-3: #6ba8d8;
-            --accent: #ff6b6b;
-            --primogem: #5ec5e8;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>星域祈愿 · 双池抽卡 | 原神 & 王者荣耀水晶</title>
+  <style>
+    :root {
+      --bg-deep: #0a0a14;
+      --bg-card: #1a1a2e;
+      --bg-panel: #141428;
+      --gold: #f0c060;
+      --gold-dark: #b8943a;
+      --gold-light: #ffe9b0;
+      --purple: #b880e0;
+      --purple-dark: #6a3d99;
+      --purple-light: #d4b8f0;
+      --blue: #5b9bd5;
+      --blue-dark: #3a6d99;
+      --blue-light: #a8d0f0;
+      --text: #e0d8c8;
+      --text-dim: #9a9488;
+      --star-5: #f7c948;
+      --star-4: #c882f0;
+      --star-3: #6ba8d8;
+      --accent: #ff6b6b;
+      --primogem: #5ec5e8;
+      
+      /* 王者水晶配色 */
+      --crystal-pink: #ff80b0;
+      --crystal-deep: #b0306a;
+      --crystal-light: #ffc0d0;
+      --diamond-blue: #40c8f0;
+      --diamond-dark: #1a6090;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            background: var(--bg-deep);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
-            background-image:
-                radial-gradient(ellipse at 50% 0%, rgba(180, 140, 60, 0.08) 0%, transparent 70%),
-                radial-gradient(ellipse at 20% 80%, rgba(120, 80, 180, 0.06) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 70%, rgba(60, 120, 200, 0.05) 0%, transparent 60%);
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
+    body {
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text);
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse at 50% 0%, rgba(180, 140, 60, 0.08) 0%, transparent 70%),
+        radial-gradient(ellipse at 20% 80%, rgba(120, 80, 180, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 70%, rgba(60, 120, 200, 0.05) 0%, transparent 60%);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        /* 星空背景粒子 */
-        .stars-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .star-particle {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle var(--dur) ease-in-out infinite;
-            animation-delay: var(--delay);
-            opacity: 0;
-        }
-        @keyframes twinkle {
-            0%,
-            100% {
-                opacity: 0.2;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.9;
-                transform: scale(1.8);
-            }
-        }
+    /* 星空背景 */
+    .stars-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .star-particle {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle var(--dur) ease-in-out infinite;
+      animation-delay: var(--delay);
+      opacity: 0;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(1); }
+      50% { opacity: 0.9; transform: scale(1.8); }
+    }
 
-        /* 主容器 */
-        .app-container {
-            position: relative;
-            z-index: 1;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 16px;
-        }
+    /* 游戏切换导航 */
+    .game-switcher {
+      position: relative;
+      z-index: 20;
+      display: flex;
+      gap: 8px;
+      background: rgba(20, 20, 40, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 8px 12px;
+      border-radius: 40px;
+      margin: 16px auto 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      width: fit-content;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .switch-btn {
+      padding: 10px 22px;
+      border-radius: 30px;
+      border: none;
+      background: transparent;
+      color: #aaa;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.25s;
+      letter-spacing: 1px;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .switch-btn.active {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      box-shadow: 0 0 16px rgba(255,255,200,0.15);
+    }
+    .switch-btn.genesis {
+      color: #f0c060;
+    }
+    .switch-btn.genesis.active {
+      background: rgba(240,192,96,0.2);
+      border: 1px solid rgba(240,192,96,0.45);
+    }
+    .switch-btn.honor {
+      color: #ff80b0;
+    }
+    .switch-btn.honor.active {
+      background: rgba(255,128,176,0.2);
+      border: 1px solid rgba(255,128,176,0.5);
+    }
 
-        /* 顶部导航 */
-        .top-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-            padding: 14px 20px;
-            background: var(--bg-panel);
-            border-radius: 16px;
-            margin-bottom: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-        }
-        .currency-display {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: #fff;
-            background: rgba(94, 197, 232, 0.12);
-            padding: 8px 16px;
-            border-radius: 24px;
-            border: 1px solid rgba(94, 197, 232, 0.3);
-        }
-        .primogem-icon {
-            width: 28px;
-            height: 28px;
-            background: linear-gradient(135deg, #5ec5e8, #3a9fc0);
-            border-radius: 6px;
-            transform: rotate(45deg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 14px rgba(94, 197, 232, 0.5);
-            flex-shrink: 0;
-        }
-        .primogem-icon::after {
-            content: '✦';
-            transform: rotate(-45deg);
-            color: #fff;
-            font-size: 14px;
-        }
-        .btn-sm {
-            padding: 7px 14px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.05);
-            color: #ccc;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.25s;
-            white-space: nowrap;
-            font-family: inherit;
-        }
-        .btn-sm:hover {
-            background: rgba(255, 255, 255, 0.14);
-            border-color: rgba(255, 255, 255, 0.4);
-            color: #fff;
-            box-shadow: 0 0 16px rgba(255, 255, 255, 0.08);
-        }
-        .btn-sm.active-pool {
-            background: rgba(240, 192, 96, 0.18);
-            border-color: var(--gold);
-            color: var(--gold-light);
-            box-shadow: 0 0 12px rgba(240, 192, 96, 0.25);
-        }
-        .pity-badge {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.9rem;
-            color: var(--text-dim);
-            background: rgba(255, 255, 255, 0.03);
-            padding: 6px 12px;
-            border-radius: 12px;
-        }
-        .pity-num {
-            font-weight: 700;
-            color: #fff;
-            font-size: 1.1rem;
-        }
-        .pity-num.near-pity {
-            color: var(--gold);
-            animation: pulse-gold 1.2s ease-in-out infinite;
-        }
-        @keyframes pulse-gold {
-            0%,
-            100% {
-                text-shadow: 0 0 8px rgba(240, 192, 96, 0.4);
-            }
-            50% {
-                text-shadow: 0 0 22px rgba(240, 192, 96, 0.9);
-            }
-        }
+    /* 主面板容器 */
+    .app-container {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 8px 16px 24px;
+    }
 
-        /* 标题 */
-        .banner-area {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .banner-title {
-            font-size: 2rem;
-            font-weight: 900;
-            letter-spacing: 3px;
-            background: linear-gradient(180deg, #ffe9b0 0%, #d4a040 50%, #8a6020 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: none;
-            margin-bottom: 2px;
-        }
-        .banner-subtitle {
-            font-size: 0.85rem;
-            color: var(--text-dim);
-            letter-spacing: 4px;
-        }
+    /* 两个游戏面板切换显示 */
+    .game-panel {
+      display: none;
+    }
+    .game-panel.active {
+      display: block;
+    }
 
-        /* UP角色展示 */
-        .up-showcase {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            background: var(--bg-panel);
-            border-radius: 16px;
-            padding: 16px 20px;
-            margin-bottom: 16px;
-            border: 1px solid rgba(240, 192, 96, 0.2);
-            box-shadow: 0 0 30px rgba(180, 140, 60, 0.08);
-            flex-wrap: wrap;
-        }
-        .up-avatar {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #3a2a10, #5a4020);
-            border: 3px solid var(--gold);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.2rem;
-            box-shadow: 0 0 28px rgba(240, 192, 96, 0.35);
-            flex-shrink: 0;
-            position: relative;
-        }
-        .up-avatar .crown {
-            position: absolute;
-            top: -16px;
-            font-size: 1.4rem;
-        }
-        .up-info h3 {
-            font-size: 1.1rem;
-            color: #fff;
-            margin-bottom: 2px;
-        }
-        .up-info .stars-row {
-            color: var(--star-5);
-            font-size: 1rem;
-            letter-spacing: 2px;
-        }
-        .up-info .rate-tag {
-            font-size: 0.8rem;
-            color: var(--gold);
-            background: rgba(240, 192, 96, 0.1);
-            padding: 3px 10px;
-            border-radius: 10px;
-            display: inline-block;
-            margin-top: 4px;
-        }
-        .guarantee-indicator {
-            margin-left: auto;
-            text-align: center;
-            font-size: 0.85rem;
-            color: var(--text-dim);
-        }
-        .guarantee-indicator .status {
-            font-weight: 700;
-            font-size: 1rem;
-            padding: 4px 10px;
-            border-radius: 8px;
-        }
-        .guarantee-indicator .status.on {
-            color: #ff9;
-            background: rgba(255, 200, 60, 0.15);
-            animation: pulse-gold 2s ease-in-out infinite;
-        }
-        .guarantee-indicator .status.off {
-            color: #aaa;
-            background: rgba(150, 150, 150, 0.08);
-        }
+    /* 通用卡片样式 */
+    .top-bar, .up-showcase, .pity-progress, .history-section, .crystal-stats {
+      background: var(--bg-panel);
+      border-radius: 18px;
+      padding: 14px 20px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
 
-        /* 抽卡按钮区 */
-        .wish-buttons {
-            display: flex;
-            gap: 14px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-        .btn-wish {
-            position: relative;
-            padding: 16px 36px;
-            font-size: 1.15rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: inherit;
-            color: #fff;
-            overflow: hidden;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-        }
-        .btn-wish.single {
-            background: linear-gradient(135deg, #4a4a6a, #3a3a55);
-            box-shadow: 0 6px 24px rgba(80, 80, 120, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-        .btn-wish.single:hover {
-            box-shadow: 0 8px 30px rgba(100, 100, 160, 0.5);
-            transform: translateY(-2px);
-        }
-        .btn-wish.ten {
-            background: linear-gradient(135deg, #6a4a8a, #4a3070);
-            box-shadow: 0 6px 28px rgba(120, 70, 180, 0.4);
-            border: 1px solid rgba(200, 150, 255, 0.25);
-            font-size: 1.25rem;
-        }
-        .btn-wish.ten:hover {
-            box-shadow: 0 8px 36px rgba(150, 90, 220, 0.6);
-            transform: translateY(-3px);
-        }
-        .btn-wish:active {
-            transform: scale(0.95);
-            transition: transform 0.1s;
-        }
-        .btn-wish .cost {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: 400;
-            opacity: 0.8;
-            letter-spacing: 1px;
-            margin-top: 2px;
-        }
-        .btn-wish::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-        .btn-wish:hover::after {
-            opacity: 1;
-        }
-        .btn-wish:disabled {
-            opacity: 0.45;
-            cursor: not-allowed;
-            filter: grayscale(30%);
-            pointer-events: none;
-        }
-        .btn-wish .sparkle {
-            position: absolute;
-            pointer-events: none;
-        }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .currency-display {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: #fff;
+      background: rgba(94,197,232,0.12);
+      padding: 7px 18px;
+      border-radius: 24px;
+    }
+    .btn-sm {
+      padding: 7px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.05);
+      color: #ccc;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+    .btn-sm:hover {
+      background: rgba(255,255,255,0.15);
+      color: white;
+    }
 
-        /* 保底进度条 */
-        .pity-progress {
-            background: var(--bg-panel);
-            border-radius: 16px;
-            padding: 14px 20px;
-            margin-bottom: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .pity-progress .row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-            font-size: 0.85rem;
-            color: var(--text-dim);
-        }
-        .pity-progress .row strong {
-            color: #fff;
-        }
-        .progress-bar-outer {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-        .progress-bar-inner {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.4s ease;
-            background: linear-gradient(90deg, #5b9bd5, #b880e0);
-        }
-        .progress-bar-inner.warning {
-            background: linear-gradient(90deg, #e8a040, #f0c060);
-            box-shadow: 0 0 12px rgba(240, 192, 96, 0.5);
-        }
-        .pity-markers {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            margin-top: 3px;
-            padding: 0 2px;
-        }
-        .pity-markers span {
-            position: relative;
-        }
+    .banner-area {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .banner-title {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 4px;
+      background: linear-gradient(180deg, #ffe9b0 0%, #d4a040 50%, #8a6020 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .banner-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      letter-spacing: 3px;
+    }
 
-        /* 弹窗覆盖层 */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.25s ease;
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            padding: 20px;
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-        .modal-content {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 24px;
-            max-width: 700px;
-            width: 100%;
-            max-height: 85vh;
-            overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
-            animation: slideUp 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
-            position: relative;
-        }
-        @keyframes slideUp {
-            from {
-                transform: translateY(40px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        .modal-close {
-            position: sticky;
-            top: 0;
-            float: right;
-            z-index: 10;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: #fff;
-        }
-        .modal-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 20px;
-            color: #fff;
-            letter-spacing: 2px;
-        }
-        .modal-title.five-star {
-            color: var(--gold-light);
-            text-shadow: 0 0 30px rgba(240, 192, 96, 0.7);
-        }
-        .modal-title.four-star {
-            color: var(--purple-light);
-            text-shadow: 0 0 20px rgba(180, 128, 224, 0.5);
-        }
+    .wish-buttons {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 18px 0;
+    }
+    .btn-wish {
+      padding: 14px 32px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #4a4a6a, #3a3a55);
+      color: white;
+      transition: all 0.3s;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      font-family: inherit;
+    }
+    .btn-wish:active { transform: scale(0.96); }
+    .btn-wish:disabled { opacity: 0.4; pointer-events: none; }
 
-        /* 十连结果网格 */
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            justify-items: center;
-        }
-        @media (max-width: 550px) {
-            .results-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 7px;
-            }
-        }
-        @media (max-width: 380px) {
-            .results-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 6px;
-            }
-        }
-        .result-card {
-            width: 100%;
-            aspect-ratio: 3/4.5;
-            perspective: 800px;
-            cursor: default;
-        }
-        .result-card-inner {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 10px;
-        }
-        .result-card-inner.flipped {
-            transform: rotateY(180deg);
-        }
-        .result-card-front,
-        .result-card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 8px;
-            text-align: center;
-        }
-        .result-card-back {
-            background: linear-gradient(135deg, #2a2a40, #1a1a2e);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            z-index: 2;
-            font-size: 2rem;
-            color: rgba(255, 255, 255, 0.3);
-        }
-        .result-card-back .back-icon {
-            font-size: 2.2rem;
-            opacity: 0.5;
-        }
-        .result-card-front {
-            transform: rotateY(180deg);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            z-index: 1;
-        }
-        .result-card-front.rarity-5 {
-            background: linear-gradient(180deg, #3a2a10 0%, #1a1008 100%);
-            border-color: var(--gold);
-            box-shadow: 0 0 24px rgba(240, 192, 96, 0.5), inset 0 0 20px rgba(240, 192, 96, 0.08);
-            animation: glow-gold 2s ease-in-out infinite;
-        }
-        .result-card-front.rarity-4 {
-            background: linear-gradient(180deg, #2a1a3a 0%, #140a1e 100%);
-            border-color: var(--purple);
-            box-shadow: 0 0 16px rgba(180, 128, 224, 0.4), inset 0 0 14px rgba(180, 128, 224, 0.05);
-        }
-        .result-card-front.rarity-3 {
-            background: linear-gradient(180deg, #1a2a38 0%, #0a141e 100%);
-            border-color: rgba(100, 160, 210, 0.5);
-            box-shadow: 0 0 8px rgba(100, 150, 200, 0.2);
-        }
-        @keyframes glow-gold {
-            0%,
-            100% {
-                box-shadow: 0 0 24px rgba(240, 192, 96, 0.5), inset 0 0 20px rgba(240, 192, 96, 0.08);
-            }
-            50% {
-                box-shadow: 0 0 40px rgba(255, 210, 120, 0.8), inset 0 0 30px rgba(240, 192, 96, 0.18);
-            }
-        }
-        .result-card-front .card-icon {
-            font-size: 2rem;
-            margin-bottom: 4px;
-        }
-        .result-card-front .card-name {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #fff;
-            line-height: 1.2;
-            margin-bottom: 2px;
-        }
-        .result-card-front .card-type {
-            font-size: 0.65rem;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 3px;
-        }
-        .result-card-front .card-stars {
-            font-size: 0.7rem;
-            letter-spacing: 1px;
-        }
-        .rarity-5 .card-stars {
-            color: var(--star-5);
-        }
-        .rarity-4 .card-stars {
-            color: var(--star-4);
-        }
-        .rarity-3 .card-stars {
-            color: var(--star-3);
-        }
-        .result-card-front .up-badge {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            background: #ff4444;
-            color: #fff;
-            font-size: 0.6rem;
-            font-weight: 700;
-            padding: 2px 6px;
-            border-radius: 4px;
-            letter-spacing: 1px;
-        }
+    /* 历史记录 */
+    .history-list {
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .history-item {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
 
-        /* 单抽大卡 */
-        .single-result {
-            text-align: center;
-            padding: 20px;
-        }
-        .single-result .big-card {
-            display: inline-block;
-            width: 160px;
-            aspect-ratio: 3/4.5;
-            perspective: 800px;
-            margin: 0 auto 16px;
-        }
-        .single-result .big-card .result-card-inner {
-            border-radius: 14px;
-        }
-        .single-result .big-card .result-card-front {
-            border-radius: 14px;
-        }
-        .single-result .big-card .result-card-back {
-            border-radius: 14px;
-        }
-        .single-result .big-card .card-icon {
-            font-size: 3rem;
-        }
-        .single-result .big-card .card-name {
-            font-size: 1rem;
-        }
-        .single-result .big-card .card-stars {
-            font-size: 0.9rem;
-        }
-        .single-result .congrats-text {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-top: 8px;
-            animation: fadeIn 0.6s ease 0.5s both;
-        }
+    /* 王者荣耀水晶专属 */
+    .crystal-main {
+      background: radial-gradient(circle at 30% 30%, #2a1a30, #120a1a);
+      border: 1px solid rgba(255,128,176,0.35);
+    }
+    .crystal-amount {
+      background: rgba(255,128,176,0.15);
+      border: 1px solid #ff80b0;
+    }
+    .diamond-icon {
+      background: linear-gradient(135deg, #40c8f0, #1a6090);
+      border-radius: 6px;
+      transform: rotate(45deg);
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 14px #40c8f0;
+    }
+    .diamond-icon::after {
+      content: '💎';
+      transform: rotate(-45deg);
+      font-size: 14px;
+    }
+    .crystal-progress-box {
+      background: #1e1428;
+      border-radius: 20px;
+      padding: 12px 16px;
+    }
+    .lucky-bar {
+      height: 10px;
+      background: #2a1a35;
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+    .lucky-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff80b0, #ff4080);
+      box-shadow: 0 0 14px #ff4080;
+      transition: width 0.2s ease;
+    }
+    .crystal-result-icon {
+      font-size: 2.8rem;
+      filter: drop-shadow(0 0 14px #ff80b0);
+    }
 
-        /* 金色光柱效果 */
-        .golden-beam {
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 100%;
-            pointer-events: none;
-            z-index: 150;
-            background: linear-gradient(to bottom,
-                    transparent 0%,
-                    rgba(255, 220, 140, 0.15) 20%,
-                    rgba(255, 200, 100, 0.35) 40%,
-                    rgba(255, 180, 60, 0.5) 50%,
-                    rgba(255, 200, 100, 0.35) 60%,
-                    rgba(255, 220, 140, 0.15) 80%,
-                    transparent 100%);
-            animation: beamPulse 0.8s ease-out forwards;
-        }
-        @keyframes beamPulse {
-            0% {
-                opacity: 0;
-                transform: translateX(-50%) scaleY(0.3);
-            }
-            40% {
-                opacity: 1;
-                transform: translateX(-50%) scaleY(1.05);
-            }
-            100% {
-                opacity: 0;
-                transform: translateX(-50%) scaleY(1);
-            }
-        }
-
-        /* 粒子爆发 */
-        .particle-burst {
-            position: fixed;
-            pointer-events: none;
-            z-index: 160;
-            top: 50%;
-            left: 50%;
-        }
-        .particle-burst .particle {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            animation: burstAnim 1.2s ease-out forwards;
-        }
-        @keyframes burstAnim {
-            0% {
-                transform: translate(0, 0) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(var(--dx), var(--dy)) scale(0);
-                opacity: 0;
-            }
-        }
-
-        /* 历史记录 */
-        .history-section {
-            background: var(--bg-panel);
-            border-radius: 16px;
-            padding: 16px 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            margin-top: 16px;
-        }
-        .history-section h4 {
-            font-size: 0.95rem;
-            color: #fff;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .history-list {
-            max-height: 200px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            font-size: 0.8rem;
-        }
-        .history-list::-webkit-scrollbar {
-            width: 4px;
-        }
-        .history-list::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .history-list::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-        }
-        .history-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 10px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.02);
-        }
-        .history-item .dot-5 {
-            color: var(--star-5);
-            font-weight: 700;
-        }
-        .history-item .dot-4 {
-            color: var(--star-4);
-            font-weight: 700;
-        }
-        .history-item .dot-3 {
-            color: var(--star-3);
-        }
-        .history-item .history-name {
-            flex: 1;
-            color: #ccc;
-        }
-        .history-item .history-count {
-            color: var(--text-dim);
-            font-size: 0.7rem;
-        }
-
-        /* toast */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #222;
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: 24px;
-            z-index: 200;
-            font-size: 0.9rem;
-            animation: toastIn 0.3s ease, toastOut 0.3s ease 1.8s forwards;
-            pointer-events: none;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-        @keyframes toastOut {
-            from {
-                opacity: 1;
-            }
-            to {
-                opacity: 0;
-                transform: translateX(-50%) translateY(-20px);
-            }
-        }
-
-        /* 响应式 */
-        @media (max-width: 600px) {
-            .banner-title {
-                font-size: 1.4rem;
-                letter-spacing: 1px;
-            }
-            .btn-wish {
-                padding: 14px 24px;
-                font-size: 1rem;
-                letter-spacing: 1px;
-            }
-            .btn-wish.ten {
-                font-size: 1.1rem;
-            }
-            .up-showcase {
-                gap: 10px;
-                padding: 12px 14px;
-            }
-            .up-avatar {
-                width: 52px;
-                height: 52px;
-                font-size: 1.6rem;
-            }
-            .up-info h3 {
-                font-size: 0.95rem;
-            }
-            .top-bar {
-                padding: 10px 14px;
-                gap: 8px;
-            }
-            .currency-display {
-                font-size: 0.95rem;
-                padding: 6px 12px;
-            }
-            .modal-content {
-                padding: 16px;
-                border-radius: 14px;
-            }
-            .results-grid {
-                gap: 6px;
-            }
-            .result-card-front .card-name {
-                font-size: 0.65rem;
-            }
-            .result-card-front .card-icon {
-                font-size: 1.4rem;
-            }
-        }
-    </style>
+    /* 弹窗等复用 */
+    .modal-overlay {
+      position: fixed;
+      top:0;left:0;width:100%;height:100%;
+      background: rgba(0,0,0,0.75);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+    }
+    .modal-content {
+      background: var(--bg-card);
+      border-radius: 22px;
+      padding: 20px;
+      max-width: 500px;
+      width: 90%;
+      border: 1px solid rgba(255,255,255,0.15);
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .toast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: #222; color: white; padding: 12px 24px; border-radius: 24px;
+      z-index: 300; animation: toastIn 0.3s;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+    @media (max-width: 500px) {
+      .switch-btn { padding: 8px 14px; font-size: 0.8rem; }
+    }
+  </style>
 </head>
 <body>
+  <div class="stars-container" id="starsContainer"></div>
 
-    <!-- 星空背景 -->
-    <div class="stars-container" id="starsContainer"></div>
+  <!-- 游戏切换器 -->
+  <div class="game-switcher">
+    <button class="switch-btn genesis active" id="switchGenshin">✨ 原神 · 祈愿</button>
+    <button class="switch-btn honor" id="switchHonor">👑 王者 · 荣耀水晶</button>
+  </div>
 
-    <!-- 主容器 -->
-    <div class="app-container">
-        <!-- 顶部信息栏 -->
-        <div class="top-bar">
-            <div class="currency-display">
-                <div class="primogem-icon"></div>
-                <span id="primogemCount">9600</span>
-            </div>
-            <button class="btn-sm" onclick="addPrimogems(160)" title="每日签到">📅 +160</button>
-            <button class="btn-sm" onclick="addPrimogems(1600)" title="充值">💎 +1600</button>
-            <button class="btn-sm" onclick="addPrimogems(4800)" title="大礼包">🎁 +4800</button>
-            <div class="pity-badge">
-                五星保底: <span class="pity-num" id="pity5Display">0</span>/90
-            </div>
-        </div>
-
-        <!-- 标题 -->
-        <div class="banner-area">
-            <div class="banner-title">星 域 祈 愿</div>
-            <div class="banner-subtitle">✦ STAR WISH SIMULATOR ✦</div>
-        </div>
-
-        <!-- UP角色展示 -->
-        <div class="up-showcase" id="upShowcase">
-            <div class="up-avatar">
-                <span class="crown">👑</span>
-                ✨
-            </div>
-            <div class="up-info">
-                <h3 id="upCharName">荧辉 · 星落</h3>
-                <div class="stars-row">★★★★★</div>
-                <span class="rate-tag">⬆ UP 概率提升</span>
-            </div>
-            <div class="guarantee-indicator">
-                大保底<br>
-                <span class="status off" id="guaranteeStatus">未触发</span>
-            </div>
-        </div>
-
-        <!-- 保底进度条 -->
-        <div class="pity-progress">
-            <div class="row">
-                <span>距上次五星已抽</span>
-                <strong id="pity5Text">0 抽</strong>
-            </div>
-            <div class="progress-bar-outer">
-                <div class="progress-bar-inner" id="pity5Bar" style="width: 0%;"></div>
-            </div>
-            <div class="pity-markers">
-                <span>0</span><span>30</span><span>60</span><span style="color:#f0c060;">74软保底</span><span>90硬保底</span>
-            </div>
-            <div class="row" style="margin-top:10px;">
-                <span>距上次四星已抽</span>
-                <strong id="pity4Text">0 抽</strong>
-            </div>
-            <div class="progress-bar-outer">
-                <div class="progress-bar-inner" id="pity4Bar" style="width: 0%; background: #b880e0;"></div>
-            </div>
-            <div class="pity-markers">
-                <span>0</span><span>3</span><span>6</span><span>9</span><span style="color:#c882f0;">10保底</span>
-            </div>
-        </div>
-
-        <!-- 抽卡按钮 -->
-        <div class="wish-buttons">
-            <button class="btn-wish single" id="btnSingle" onclick="performWish(1)">
-                祈愿 ×1<span class="cost">消耗 160 原石</span>
-            </button>
-            <button class="btn-wish ten" id="btnTen" onclick="performWish(10)">
-                祈愿 ×10<span class="cost">消耗 1600 原石</span>
-            </button>
-        </div>
-
-        <!-- 抽卡历史 -->
-        <div class="history-section">
-            <h4>
-                📜 祈愿记录
-                <span style="font-size:0.7rem;color:var(--text-dim);">总抽数: <span id="totalWishes">0</span> | 五星: <span id="total5Star">0</span></span>
-            </h4>
-            <div class="history-list" id="historyList">
-                <span style="color:var(--text-dim);">尚未进行祈愿...</span>
-            </div>
-        </div>
+  <div class="app-container" id="appContainer">
+    <!-- ========= 原神面板 ========= -->
+    <div class="game-panel active" id="panelGenshin">
+      <div class="top-bar">
+        <div class="currency-display"><div class="primogem-icon"></div><span id="primogemCount">9600</span></div>
+        <button class="btn-sm" onclick="addGenshinCurrency(160)">+160</button>
+        <button class="btn-sm" onclick="addGenshinCurrency(1600)">+1600</button>
+        <div><span>五星保底:</span> <strong id="pity5Display">0</strong>/90</div>
+      </div>
+      <div class="banner-area"><div class="banner-title">星域祈愿</div><div class="banner-subtitle">GENSHIN WISH</div></div>
+      <div class="up-showcase" style="display:flex; align-items:center; gap:16px;">
+        <div style="font-size:3rem;">✨🌟</div>
+        <div><h3>荧辉·星落</h3><div style="color:#f0c060;">★★★★★ UP</div></div>
+      </div>
+      <div class="pity-progress">
+        <div>五星进度 <span id="pity5Text">0</span>/90</div>
+        <div class="lucky-bar"><div class="lucky-fill" id="pity5Bar" style="background:linear-gradient(90deg,#f0c060,#ffaa00);"></div></div>
+      </div>
+      <div class="wish-buttons">
+        <button class="btn-wish" onclick="performGenshinWish(1)">祈愿×1 (160)</button>
+        <button class="btn-wish" style="background:linear-gradient(135deg,#6a4a8a,#4a3070);" onclick="performGenshinWish(10)">祈愿×10 (1600)</button>
+      </div>
+      <div class="history-section"><h4>📜 原神记录</h4><div class="history-list" id="genshinHistory">暂无记录</div></div>
     </div>
 
-    <!-- 弹窗（动态创建） -->
-    <div id="modalContainer"></div>
+    <!-- ========= 王者荣耀水晶面板 ========= -->
+    <div class="game-panel" id="panelHonor">
+      <div class="top-bar crystal-main">
+        <div class="currency-display crystal-amount"><span>💎</span> <span id="diamondCount">5000</span></div>
+        <button class="btn-sm" onclick="addHonorCurrency(270)">+270</button>
+        <button class="btn-sm" onclick="addHonorCurrency(1350)">+1350</button>
+        <div><span>幸运值:</span> <strong id="luckyValueDisplay">0</strong>/361</div>
+      </div>
+      <div class="banner-area">
+        <div class="banner-title" style="background: linear-gradient(180deg, #ffc0d0, #ff80b0, #b0306a); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">荣耀水晶</div>
+        <div class="banner-subtitle">HONOR CRYSTAL</div>
+      </div>
+      <div class="crystal-progress-box">
+        <div style="display: flex; justify-content: space-between;">
+          <span>🔮 幸运值</span><span id="luckyText">0 / 361</span>
+        </div>
+        <div class="lucky-bar"><div class="lucky-fill" id="luckyBarFill" style="background:#ff4080;"></div></div>
+        <div style="font-size:0.7rem; color:#aaa;">保底361必出荣耀水晶</div>
+      </div>
+      <div class="wish-buttons">
+        <button class="btn-wish" style="background:#b0306a;" onclick="performHonorDraw(1)">抽1次 (60💎)</button>
+        <button class="btn-wish" style="background:linear-gradient(135deg,#c04080,#802050);" onclick="performHonorDraw(5)">抽5次 (270💎)</button>
+      </div>
+      <div class="history-section"><h4>👑 水晶记录</h4><div class="history-list" id="honorHistory">暂无抽奖</div></div>
+    </div>
+  </div>
 
-    <!-- 金色光柱（动态） -->
-    <div id="fxContainer"></div>
+  <div id="modalContainer"></div>
+  <div id="fxContainer"></div>
 
-    <script>
-        (function() {
-            // ============ 数据定义 ============
-            const FIVE_STAR_CHARS = [
-                { name: '荧辉 · 星落', icon: '✨🌟', type: '光', isUp: true },
-                { name: '墨渊 · 暗影', icon: '🌑💜', type: '暗', isUp: false },
-                { name: '风翎 · 青岚', icon: '🍃💨', type: '风', isUp: false },
-                { name: '霜落 · 雪月', icon: '❄️🌙', type: '冰', isUp: false },
-                { name: '焰心 · 红莲', icon: '🔥🌺', type: '火', isUp: false },
-                { name: '霆光 · 紫电', icon: '⚡💡', type: '雷', isUp: false },
-            ];
+  <script>
+    (function() {
+      // ---------- 星空背景 ----------
+      function createStars() {
+        const container = document.getElementById('starsContainer');
+        for (let i=0;i<70;i++) {
+          const star = document.createElement('div');
+          star.className = 'star-particle';
+          star.style.left = Math.random()*100+'%';
+          star.style.top = Math.random()*100+'%';
+          star.style.width = (1+Math.random()*2.5)+'px';
+          star.style.height = star.style.width;
+          star.style.setProperty('--dur', (2+Math.random()*6)+'s');
+          star.style.setProperty('--delay', Math.random()*5+'s');
+          container.appendChild(star);
+        }
+      }
+      createStars();
 
-            const FOUR_STAR_CHARS = [
-                { name: '苍林 · 翠微', icon: '🌿🌲', type: '草' },
-                { name: '流云 · 白羽', icon: '☁️🕊️', type: '风' },
-                { name: '寒叶 · 霜华', icon: '🍂❄️', type: '冰' },
-                { name: '暗暮 · 夜帷', icon: '🌆🦉', type: '暗' },
-                { name: '晓曦 · 晨光', icon: '🌅☀️', type: '光' },
-                { name: '岩守 · 坚盾', icon: '🪨🛡️', type: '岩' },
-                { name: '水镜 · 涟漪', icon: '💧🪞', type: '水' },
-                { name: '炎舞 · 火花', icon: '💃🔥', type: '火' },
-            ];
+      // ---------- 全局切换逻辑 ----------
+      const switchGenshin = document.getElementById('switchGenshin');
+      const switchHonor = document.getElementById('switchHonor');
+      const panelGenshin = document.getElementById('panelGenshin');
+      const panelHonor = document.getElementById('panelHonor');
 
-            const THREE_STAR_WEAPONS = [
-                { name: '铁剑', icon: '🗡️', type: '单手剑' },
-                { name: '猎弓', icon: '🏹', type: '弓' },
-                { name: '学徒法杖', icon: '🪄', type: '法器' },
-                { name: '长枪', icon: '🔱', type: '长柄' },
-                { name: '轻弩', icon: '🎯', type: '弩' },
-                { name: '铁盾', icon: '🛡️', type: '盾' },
-                { name: '短刀', icon: '🔪', type: '匕首' },
-                { name: '木杖', icon: '🦯', type: '法器' },
-            ];
+      function setActivePanel(panelName) {
+        if (panelName === 'genshin') {
+          panelGenshin.classList.add('active');
+          panelHonor.classList.remove('active');
+          switchGenshin.classList.add('active');
+          switchHonor.classList.remove('active');
+        } else {
+          panelHonor.classList.add('active');
+          panelGenshin.classList.remove('active');
+          switchHonor.classList.add('active');
+          switchGenshin.classList.remove('active');
+        }
+      }
+      switchGenshin.addEventListener('click', ()=> setActivePanel('genshin'));
+      switchHonor.addEventListener('click', ()=> setActivePanel('honor'));
 
-            // ============ 状态管理 ============
-            let state = {
-                primogems: 9600,
-                pity5: 0, // 距上次五星的抽数
-                pity4: 0, // 距上次四星（或五星）的抽数
-                guaranteed: false, // 大保底状态
-                totalWishes: 0,
-                total5Star: 0,
-                history: [], // 最近50条记录
-                last5StarWasUp: true, // 上一个五星是否是UP
-            };
+      // ---------- 原神抽卡状态 ----------
+      const genshinState = {
+        primogems: 9600,
+        pity5: 0,
+        pity4: 0,
+        guaranteed: false,
+        totalWishes: 0,
+        history: []
+      };
+      const fiveStars = [
+        { name:'荧辉·星落', icon:'✨🌟', up:true },
+        { name:'墨渊·暗影', icon:'🌑💜', up:false },
+        { name:'风翎·青岚', icon:'🍃💨', up:false },
+        { name:'霜落·雪月', icon:'❄️🌙', up:false }
+      ];
+      const fourStars = [
+        { name:'苍林·翠微', icon:'🌿' }, { name:'流云·白羽', icon:'☁️' }
+      ];
+      const threeStars = [
+        { name:'铁剑', icon:'🗡️' }, { name:'猎弓', icon:'🏹' }
+      ];
 
-            // ============ DOM引用 ============
-            const $ = (sel) => document.querySelector(sel);
-            const $$ = (sel) => document.querySelectorAll(sel);
+      function updateGenshinUI() {
+        document.getElementById('primogemCount').textContent = genshinState.primogems;
+        document.getElementById('pity5Display').textContent = genshinState.pity5;
+        document.getElementById('pity5Text').textContent = genshinState.pity5;
+        const bar = document.getElementById('pity5Bar');
+        bar.style.width = Math.min(100, (genshinState.pity5/90)*100)+'%';
+        
+        const historyDiv = document.getElementById('genshinHistory');
+        if (genshinState.history.length===0) historyDiv.innerHTML = '暂无记录';
+        else historyDiv.innerHTML = genshinState.history.slice(0,20).map(h=> 
+          `<div class="history-item">${h.icon} ${h.name} (${'★'.repeat(h.rarity)})</div>`).join('');
+      }
 
-            function updateUI() {
-                $('#primogemCount').textContent = state.primogems.toLocaleString();
-                $('#pity5Display').textContent = state.pity5;
-                $('#pity5Text').textContent = state.pity5 + ' 抽';
-                $('#pity4Text').textContent = state.pity4 + ' 抽';
-                $('#totalWishes').textContent = state.totalWishes;
-                $('#total5Star').textContent = state.total5Star;
+      function genshinSinglePull() {
+        let rarity;
+        const p5 = genshinState.pity5>=89 ? 1.0 : (genshinState.pity5>=73 ? 0.006+(genshinState.pity5-72)*0.06 : 0.006);
+        if (Math.random() < p5) rarity=5;
+        else if (Math.random() < 0.051 || genshinState.pity4>=9) rarity=4;
+        else rarity=3;
 
-                // 保底进度条
-                const p5bar = $('#pity5Bar');
-                p5bar.style.width = Math.min(100, (state.pity5 / 90) * 100) + '%';
-                if (state.pity5 >= 70) {
-                    p5bar.classList.add('warning');
-                } else {
-                    p5bar.classList.remove('warning');
-                }
+        let item;
+        if (rarity===5) {
+          const up = genshinState.guaranteed ? true : Math.random()<0.5;
+          genshinState.guaranteed = !up;
+          item = up ? {...fiveStars.find(f=>f.up)} : {...fiveStars.filter(f=>!f.up)[Math.floor(Math.random()*4)]};
+          genshinState.pity5=0; genshinState.pity4=0;
+        } else if (rarity===4) {
+          item = {...fourStars[Math.floor(Math.random()*fourStars.length)], rarity:4};
+          genshinState.pity5++; genshinState.pity4=0;
+        } else {
+          item = {...threeStars[Math.floor(Math.random()*threeStars.length)], rarity:3};
+          genshinState.pity5++; genshinState.pity4++;
+        }
+        genshinState.history.unshift({...item});
+        if(genshinState.history.length>30) genshinState.history.pop();
+        return item;
+      }
 
-                const p4bar = $('#pity4Bar');
-                p4bar.style.width = Math.min(100, (state.pity4 / 10) * 100) + '%';
+      window.performGenshinWish = function(count) {
+        const cost = count*160;
+        if(genshinState.primogems < cost) return showToast('原石不足');
+        genshinState.primogems -= cost;
+        const results = [];
+        for(let i=0;i<count;i++) results.push(genshinSinglePull());
+        updateGenshinUI();
+        if(results.some(r=>r.rarity===5)) spawnGoldenBeam();
+        showResultModal(results, 'genshin');
+      };
 
-                // 五星保底数字高亮
-                const p5d = $('#pity5Display');
-                if (state.pity5 >= 70) {
-                    p5d.classList.add('near-pity');
-                } else {
-                    p5d.classList.remove('near-pity');
-                }
+      window.addGenshinCurrency = (amt)=>{ genshinState.primogems+=amt; updateGenshinUI(); };
 
-                // 大保底状态
-                const gs = $('#guaranteeStatus');
-                if (state.guaranteed) {
-                    gs.textContent = '已触发 ⚠';
-                    gs.className = 'status on';
-                } else {
-                    gs.textContent = '未触发';
-                    gs.className = 'status off';
-                }
+      // ---------- 王者荣耀水晶状态 ----------
+      const honorState = {
+        diamonds: 5000,
+        lucky: 0,
+        history: []
+      };
+      function updateHonorUI() {
+        document.getElementById('diamondCount').textContent = honorState.diamonds;
+        document.getElementById('luckyValueDisplay').textContent = honorState.lucky;
+        document.getElementById('luckyText').textContent = honorState.lucky + ' / 361';
+        document.getElementById('luckyBarFill').style.width = (honorState.lucky/361*100)+'%';
+        
+        const histDiv = document.getElementById('honorHistory');
+        if(honorState.history.length===0) histDiv.innerHTML = '暂无抽奖';
+        else histDiv.innerHTML = honorState.history.slice(0,20).map(h=> 
+          `<div class="history-item">🔮 ${h.result} (幸运${h.lucky})</div>`).join('');
+      }
 
-                // 按钮状态
-                $('#btnSingle').disabled = state.primogems < 160;
-                $('#btnTen').disabled = state.primogems < 1600;
+      function honorSingleDraw() {
+        honorState.lucky++;
+        let isCrystal = false;
+        if (honorState.lucky >= 361) {
+          isCrystal = true;
+        } else {
+          // 平均概率约0.8%，随幸运值微增
+          const prob = 0.008 + (honorState.lucky * 0.00008);
+          isCrystal = Math.random() < prob;
+        }
+        
+        let resultText = '普通物品';
+        if (isCrystal) {
+          resultText = '👑 荣耀水晶';
+          honorState.lucky = 0; // 重置幸运值
+          spawnCrystalEffect();
+        } else {
+          const items = ['皮肤碎片','英雄碎片','钻石×28','铭文碎片','战令币'];
+          resultText = items[Math.floor(Math.random()*items.length)];
+        }
+        honorState.history.unshift({ result: resultText, lucky: honorState.lucky });
+        if(honorState.history.length>30) honorState.history.pop();
+        return { crystal: isCrystal, text: resultText };
+      }
 
-                // 更新UP展示
-                updateUpShowcase();
-            }
+      window.performHonorDraw = function(count) {
+        const cost = count===5 ? 270 : 60;
+        if(honorState.diamonds < cost) return showToast('钻石不足');
+        honorState.diamonds -= cost;
+        const draws = [];
+        for(let i=0;i<count;i++) draws.push(honorSingleDraw());
+        updateHonorUI();
+        const gotCrystal = draws.some(d=>d.crystal);
+        if(gotCrystal) {
+          showToast('🎉 获得荣耀水晶！');
+        }
+        showHonorResultModal(draws);
+      };
 
-            function updateUpShowcase() {
-                const upChar = FIVE_STAR_CHARS.find(c => c.isUp);
-                if (upChar) {
-                    $('#upCharName').textContent = upChar.name;
-                }
-            }
+      window.addHonorCurrency = (amt)=>{ honorState.diamonds+=amt; updateHonorUI(); };
 
-            // ============ 抽卡逻辑 ============
-            function rollRarity() {
-                // 返回 '5' | '4' | '3'
-                const p5 = calcFiveStarProb();
-                const roll = Math.random();
+      // ---------- 特效与弹窗 ----------
+      function spawnGoldenBeam() {
+        const fx = document.getElementById('fxContainer');
+        const beam = document.createElement('div');
+        beam.style.position='fixed'; beam.style.top=0; beam.style.left='50%';
+        beam.style.width='120px'; beam.style.height='100%'; beam.style.background='rgba(255,215,0,0.3)';
+        beam.style.transform='translateX(-50%)'; beam.style.zIndex=250;
+        fx.appendChild(beam);
+        setTimeout(()=>beam.remove(), 700);
+      }
+      function spawnCrystalEffect() {
+        const fx = document.getElementById('fxContainer');
+        const el = document.createElement('div');
+        el.style.position='fixed'; el.style.top='40%'; el.style.left='50%';
+        el.innerHTML='💖👑✨'; el.style.fontSize='4rem'; el.style.transform='translate(-50%,-50%)';
+        el.style.zIndex=260; fx.appendChild(el);
+        setTimeout(()=>el.remove(), 900);
+      }
 
-                if (roll < p5 || state.pity5 >= 89) {
-                    // 五星！
-                    return '5';
-                }
+      function showResultModal(results, game) {
+        const modal = document.createElement('div');
+        modal.className='modal-overlay';
+        let html = '';
+        if(game==='genshin'){
+          results.forEach(r=>{
+            html += `<div style="display:flex; gap:12px; align-items:center; margin:8px 0;">${r.icon} ${r.name} (${'★'.repeat(r.rarity||5)})</div>`;
+          });
+        }
+        modal.innerHTML = `<div class="modal-content"><h3>祈愿结果</h3>${html}<button class="btn-sm" style="margin-top:12px;">关闭</button></div>`;
+        document.body.appendChild(modal);
+        modal.querySelector('button').onclick = ()=> modal.remove();
+        modal.addEventListener('click', (e)=>{ if(e.target===modal) modal.remove(); });
+      }
 
-                // 四星判定
-                const p4 = calcFourStarProb();
-                if (roll < p5 + p4 || state.pity4 >= 9) {
-                    return '4';
-                }
+      function showHonorResultModal(draws) {
+        const modal = document.createElement('div');
+        modal.className='modal-overlay';
+        let items = draws.map(d=>`<div>🔮 ${d.text}</div>`).join('');
+        modal.innerHTML = `<div class="modal-content"><h3>抽奖结果</h3>${items}<button class="btn-sm" style="margin-top:12px;">确定</button></div>`;
+        document.body.appendChild(modal);
+        modal.querySelector('button').onclick = ()=> modal.remove();
+        modal.addEventListener('click', (e)=>{ if(e.target===modal) modal.remove(); });
+      }
 
-                return '3';
-            }
+      function showToast(msg) {
+        const t = document.createElement('div'); t.className='toast'; t.textContent=msg;
+        document.body.appendChild(t);
+        setTimeout(()=>t.remove(), 2000);
+      }
 
-            function calcFiveStarProb() {
-                // 基础0.6%，74抽后软保底递增
-                if (state.pity5 >= 89) return 1.0; // 硬保底
-                if (state.pity5 >= 73) {
-                    // 74抽开始( pity5=73 是第74抽 )，每抽+6%
-                    const extra = (state.pity5 - 72) * 0.06; // 第74抽时pity5=73，extra=0.06
-                    return Math.min(0.966, 0.006 + extra);
-                }
-                return 0.006; // 基础概率0.6%
-            }
+      // 初始化UI
+      updateGenshinUI();
+      updateHonorUI();
+      // 默认显示原神面板
+      setActivePanel('genshin');
 
-            function calcFourStarProb() {
-                if (state.pity4 >= 9) return 1.0; // 保底
-                return 0.051; // 基础5.1%
-            }
+      // 键盘快捷键 1/0 仅对当前活动面板有效
+      document.addEventListener('keydown', (e)=>{
+        if(e.target.tagName==='INPUT') return;
+        if(panelGenshin.classList.contains('active')){
+          if(e.key==='1') performGenshinWish(1);
+          else if(e.key==='0') performGenshinWish(10);
+        } else if(panelHonor.classList.contains('active')){
+          if(e.key==='1') performHonorDraw(1);
+          else if(e.key==='5') performHonorDraw(5);
+        }
+      });
 
-            function pickFiveStar() {
-                // 判断是否出UP
-                let isUp;
-                if (state.guaranteed) {
-                    isUp = true;
-                    state.guaranteed = false;
-                } else {
-                    isUp = Math.random() < 0.5;
-                    if (!isUp) {
-                        state.guaranteed = true; // 歪了，触发大保底
-                    }
-                }
-
-                if (isUp) {
-                    const upChar = FIVE_STAR_CHARS.find(c => c.isUp);
-                    state.last5StarWasUp = true;
-                    return { ...upChar, rarity: '5' };
-                } else {
-                    const nonUp = FIVE_STAR_CHARS.filter(c => !c.isUp);
-                    const pick = nonUp[Math.floor(Math.random() * nonUp.length)];
-                    state.last5StarWasUp = false;
-                    return { ...pick, rarity: '5', isUp: false };
-                }
-            }
-
-            function pickFourStar() {
-                const pick = FOUR_STAR_CHARS[Math.floor(Math.random() * FOUR_STAR_CHARS.length)];
-                return { ...pick, rarity: '4' };
-            }
-
-            function pickThreeStar() {
-                const pick = THREE_STAR_WEAPONS[Math.floor(Math.random() * THREE_STAR_WEAPONS.length)];
-                return { ...pick, rarity: '3' };
-            }
-
-            function singlePull() {
-                const rarity = rollRarity();
-                let result;
-
-                if (rarity === '5') {
-                    result = pickFiveStar();
-                    state.pity5 = 0;
-                    state.pity4 = 0;
-                    state.total5Star++;
-                } else if (rarity === '4') {
-                    result = pickFourStar();
-                    state.pity5++;
-                    state.pity4 = 0;
-                } else {
-                    result = pickThreeStar();
-                    state.pity5++;
-                    state.pity4++;
-                }
-
-                state.totalWishes++;
-                state.history.unshift({
-                    ...result,
-                    pullNumber: state.totalWishes,
-                    time: new Date().toLocaleTimeString(),
-                });
-                // 只保留最近50条
-                if (state.history.length > 50) state.history.pop();
-
-                return result;
-            }
-
-            function performWish(count) {
-                const cost = count * 160;
-                if (state.primogems < cost) {
-                    showToast('原石不足！');
-                    return;
-                }
-
-                state.primogems -= cost;
-                const results = [];
-                for (let i = 0; i < count; i++) {
-                    results.push(singlePull());
-                }
-                updateUI();
-                renderHistory();
-
-                // 检查是否有五星
-                const hasFiveStar = results.some(r => r.rarity === '5');
-                const hasFourStar = results.some(r => r.rarity === '4');
-
-                if (hasFiveStar) {
-                    spawnGoldenBeam();
-                    spawnParticleBurst('#f0c060');
-                }
-
-                if (count === 1) {
-                    showSingleResult(results[0]);
-                } else {
-                    showMultiResult(results);
-                }
-
-                updateUI();
-            }
-
-            // ============ 结果展示 ============
-            function showSingleResult(result) {
-                const modal = createModal(result.rarity === '5' ? '🌟 金色传说！' : result.rarity === '4' ? '💜 稀有物品' :
-                    '💙 普通物品');
-                if (result.rarity === '5') modal.querySelector('.modal-title').classList.add('five-star');
-                if (result.rarity === '4') modal.querySelector('.modal-title').classList.add('four-star');
-
-                const body = modal.querySelector('.modal-body');
-                body.innerHTML = `
-                    <div class="single-result">
-                        <div class="big-card">
-                            <div class="result-card-inner" id="singleCardInner">
-                                <div class="result-card-back">
-                                    <span class="back-icon">✦</span>
-                                </div>
-                                <div class="result-card-front rarity-${result.rarity}">
-                                    ${result.isUp === true ? '<span class="up-badge">UP</span>' : ''}
-                                    <span class="card-icon">${result.icon}</span>
-                                    <span class="card-name">${result.name}</span>
-                                    <span class="card-type">${result.type || ''}</span>
-                                    <span class="card-stars">${'★'.repeat(parseInt(result.rarity))}</span>
-                                </div>
-                            </div>
-                        </div>
-                        ${result.rarity === '5' ? '<div class="congrats-text" style="color:#f0c060;">✨ 恭喜获得五星！✨</div>' : ''}
-                        ${result.rarity === '4' ? '<div class="congrats-text" style="color:#c882f0;">稀有物品入手</div>' : ''}
-                    </div>
-                `;
-
-                document.body.appendChild(modal);
-                // 延迟翻转
-                setTimeout(() => {
-                    const inner = modal.querySelector('#singleCardInner');
-                    if (inner) inner.classList.add('flipped');
-                }, 200);
-            }
-
-            function showMultiResult(results) {
-                const has5 = results.some(r => r.rarity === '5');
-                const titleText = has5 ? '🌟 金色传说！十连出货！' : '祈愿结果';
-                const modal = createModal(titleText);
-                if (has5) modal.querySelector('.modal-title').classList.add('five-star');
-
-                const body = modal.querySelector('.modal-body');
-                let cardsHTML = '<div class="results-grid">';
-                results.forEach((r, i) => {
-                    cardsHTML += `
-                        <div class="result-card">
-                            <div class="result-card-inner" data-index="${i}">
-                                <div class="result-card-back">
-                                    <span class="back-icon">✦</span>
-                                </div>
-                                <div class="result-card-front rarity-${r.rarity}">
-                                    ${r.isUp === true ? '<span class="up-badge">UP</span>' : ''}
-                                    <span class="card-icon">${r.icon}</span>
-                                    <span class="card-name">${r.name}</span>
-                                    <span class="card-type">${r.type || ''}</span>
-                                    <span class="card-stars">${'★'.repeat(parseInt(r.rarity))}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                cardsHTML += '</div>';
-                body.innerHTML = cardsHTML;
-
-                document.body.appendChild(modal);
-
-                // 依次翻转
-                const inners = modal.querySelectorAll('.result-card-inner');
-                inners.forEach((inner, i) => {
-                    setTimeout(() => {
-                        inner.classList.add('flipped');
-                        // 五星卡牌额外闪光
-                        if (results[i].rarity === '5') {
-                            const front = inner.querySelector('.result-card-front');
-                            if (front) {
-                                front.style.animation = 'none';
-                                front.offsetHeight;
-                                front.style.animation = 'glow-gold 2s ease-in-out infinite';
-                            }
-                        }
-                    }, 250 + i * 280);
-                });
-            }
-
-            function createModal(titleText) {
-                const overlay = document.createElement('div');
-                overlay.className = 'modal-overlay';
-                overlay.innerHTML = `
-                    <div class="modal-content">
-                        <button class="modal-close">✕</button>
-                        <div class="modal-title">${titleText}</div>
-                        <div class="modal-body"></div>
-                    </div>
-                `;
-                overlay.querySelector('.modal-close').addEventListener('click', () => {
-                    overlay.remove();
-                });
-                overlay.addEventListener('click', (e) => {
-                    if (e.target === overlay) overlay.remove();
-                });
-                // ESC关闭
-                const escHandler = (e) => {
-                    if (e.key === 'Escape') {
-                        overlay.remove();
-                        document.removeEventListener('keydown', escHandler);
-                    }
-                };
-                document.addEventListener('keydown', escHandler);
-                return overlay;
-            }
-
-            // ============ 特效 ============
-            function spawnGoldenBeam() {
-                const beam = document.createElement('div');
-                beam.className = 'golden-beam';
-                document.getElementById('fxContainer').appendChild(beam);
-                setTimeout(() => beam.remove(), 900);
-            }
-
-            function spawnParticleBurst(color) {
-                const container = document.getElementById('fxContainer');
-                const burst = document.createElement('div');
-                burst.className = 'particle-burst';
-                burst.style.top = '45%';
-                burst.style.left = '50%';
-                const count = 40;
-                for (let i = 0; i < count; i++) {
-                    const p = document.createElement('div');
-                    p.className = 'particle';
-                    const angle = (Math.PI * 2 * i) / count;
-                    const dist = 80 + Math.random() * 160;
-                    p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
-                    p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
-                    p.style.background = color;
-                    p.style.width = (3 + Math.random() * 8) + 'px';
-                    p.style.height = p.style.width;
-                    p.style.animationDuration = (0.8 + Math.random() * 1.2) + 's';
-                    p.style.animationDelay = Math.random() * 0.3 + 's';
-                    burst.appendChild(p);
-                }
-                container.appendChild(burst);
-                setTimeout(() => burst.remove(), 1800);
-            }
-
-            // ============ 历史记录渲染 ============
-            function renderHistory() {
-                const list = $('#historyList');
-                if (state.history.length === 0) {
-                    list.innerHTML = '<span style="color:var(--text-dim);">尚未进行祈愿...</span>';
-                    return;
-                }
-                list.innerHTML = state.history.slice(0, 30).map(h => {
-                    const dotClass = h.rarity === '5' ? 'dot-5' : h.rarity === '4' ? 'dot-4' : 'dot-3';
-                    const starStr = '★'.repeat(parseInt(h.rarity));
-                    return `
-                        <div class="history-item">
-                            <span class="${dotClass}">${starStr}</span>
-                            <span class="history-name">${h.name}</span>
-                            <span class="history-count">#${h.pullNumber} ${h.time}</span>
-                        </div>
-                    `;
-                }).join('');
-            }
-
-            // ============ Toast ============
-            function showToast(msg) {
-                const existing = document.querySelector('.toast');
-                if (existing) existing.remove();
-                const toast = document.createElement('div');
-                toast.className = 'toast';
-                toast.textContent = msg;
-                document.body.appendChild(toast);
-                setTimeout(() => toast.remove(), 2200);
-            }
-
-            // ============ 原石操作 ============
-            window.addPrimogems = function(amount) {
-                state.primogems += amount;
-                updateUI();
-                showToast(`获得 ${amount} 原石！`);
-            };
-
-            // ============ 星空背景 ============
-            function createStars() {
-                const container = $('#starsContainer');
-                const count = 80;
-                for (let i = 0; i < count; i++) {
-                    const star = document.createElement('div');
-                    star.className = 'star-particle';
-                    star.style.left = Math.random() * 100 + '%';
-                    star.style.top = Math.random() * 100 + '%';
-                    star.style.width = (1 + Math.random() * 2.5) + 'px';
-                    star.style.height = star.style.width;
-                    star.style.setProperty('--dur', (2 + Math.random() * 6) + 's');
-                    star.style.setProperty('--delay', Math.random() * 5 + 's');
-                    container.appendChild(star);
-                }
-            }
-
-            // ============ 键盘快捷键 ============
-            function setupKeyboard() {
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === '1' && !e.ctrlKey && !e.metaKey) {
-                        performWish(1);
-                    } else if (e.key === '0' && !e.ctrlKey && !e.metaKey) {
-                        performWish(10);
-                    }
-                });
-            }
-
-            // ============ 初始化 ============
-            function init() {
-                createStars();
-                setupKeyboard();
-                updateUI();
-                renderHistory();
-                console.log('🌟 星域祈愿 - 抽卡模拟器已就绪');
-                console.log('  按键 1 = 单抽 | 按键 0 = 十连抽');
-                console.log('  五星基础概率 0.6% | 74抽软保底 | 90抽硬保底');
-                console.log('  四星基础概率 5.1% | 10抽保底');
-                console.log('  大保底机制：歪了下次必出UP');
-                console.log('  当前UP角色：荧辉 · 星落');
-            }
-
-            // 暴露performWish到全局
-            window.performWish = performWish;
-
-            init();
-        })();
-    </script>
+    })();
+  </script>
 </body>
 </html>
