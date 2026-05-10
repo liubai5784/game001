@@ -6,394 +6,358 @@
   <title>星域祈愿 · 双池抽卡 | 原神 & 王者荣耀水晶</title>
   <style>
     :root {
-      --bg-deep: #0a0a14;
-      --bg-card: #1a1a2e;
-      --bg-panel: #141428;
-      --gold: #f0c060;
-      --gold-dark: #b8943a;
-      --gold-light: #ffe9b0;
-      --purple: #b880e0;
-      --purple-dark: #6a3d99;
-      --purple-light: #d4b8f0;
-      --blue: #5b9bd5;
-      --blue-dark: #3a6d99;
-      --blue-light: #a8d0f0;
-      --text: #e0d8c8;
-      --text-dim: #9a9488;
-      --star-5: #f7c948;
-      --star-4: #c882f0;
-      --star-3: #6ba8d8;
-      --accent: #ff6b6b;
-      --primogem: #5ec5e8;
-      
-      /* 王者水晶配色 */
-      --crystal-pink: #ff80b0;
+      --bg-deep: #050510;
+      --gold: #f5c84e;
+      --gold-dark: #a67c1e;
+      --gold-light: #fff0b0;
+      --purple: #b57bee;
+      --purple-dark: #5a2d8a;
+      --purple-light: #e0c8f8;
+      --blue: #5ea3e0;
+      --blue-dark: #2d5280;
+      --crystal-pink: #ff7eb3;
       --crystal-deep: #b0306a;
-      --crystal-light: #ffc0d0;
-      --diamond-blue: #40c8f0;
-      --diamond-dark: #1a6090;
+      --diamond-blue: #3ad1f0;
+      --text: #ede6d5;
+      --text-dim: #9b9688;
+      --star-5: #fcd34d;
+      --star-4: #c084fc;
+      --star-3: #6ba8d8;
+      --font-main: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+      font-family: var(--font-main);
       background: var(--bg-deep);
       color: var(--text);
       min-height: 100vh;
-      background-image:
-        radial-gradient(ellipse at 50% 0%, rgba(180, 140, 60, 0.08) 0%, transparent 70%),
-        radial-gradient(ellipse at 20% 80%, rgba(120, 80, 180, 0.06) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 70%, rgba(60, 120, 200, 0.05) 0%, transparent 60%);
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(ellipse at 40% 10%, rgba(160, 120, 50, 0.12) 0%, transparent 70%),
+        radial-gradient(ellipse at 80% 30%, rgba(120, 60, 180, 0.1) 0%, transparent 70%),
+        radial-gradient(ellipse at 20% 80%, rgba(40, 100, 180, 0.08) 0%, transparent 70%);
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    /* 星空背景 */
+    /* 动态星空背景 */
     .stars-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
     }
     .star-particle {
-      position: absolute;
-      background: white;
-      border-radius: 50%;
+      position: absolute; background: white; border-radius: 50%;
       animation: twinkle var(--dur) ease-in-out infinite;
-      animation-delay: var(--delay);
-      opacity: 0;
+      animation-delay: var(--delay); opacity: 0;
+      box-shadow: 0 0 8px rgba(255,255,255,0.8);
     }
     @keyframes twinkle {
-      0%, 100% { opacity: 0.2; transform: scale(1); }
-      50% { opacity: 0.9; transform: scale(1.8); }
+      0%, 100% { opacity: 0.15; transform: scale(0.8); }
+      50% { opacity: 0.95; transform: scale(1.6); }
     }
 
-    /* 游戏切换导航 */
+    /* 流动极光 */
+    .aurora-bg {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
+      background: radial-gradient(circle at 25% 35%, rgba(255,200,100,0.06) 0%, transparent 55%),
+                  radial-gradient(circle at 75% 65%, rgba(180,100,220,0.06) 0%, transparent 55%);
+      animation: auroraMove 25s ease-in-out infinite alternate;
+    }
+    @keyframes auroraMove {
+      0% { transform: scale(1) translate(0,0); }
+      100% { transform: scale(1.25) translate(-3%, 2%); }
+    }
+
+    /* 游戏切换导航 - 升级版 */
     .game-switcher {
-      position: relative;
-      z-index: 20;
-      display: flex;
-      gap: 8px;
-      background: rgba(20, 20, 40, 0.85);
-      backdrop-filter: blur(12px);
-      padding: 8px 12px;
-      border-radius: 40px;
-      margin: 16px auto 8px;
-      border: 1px solid rgba(255,255,255,0.1);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      position: relative; z-index: 20;
+      display: flex; gap: 12px;
+      background: rgba(8,8,20,0.8);
+      backdrop-filter: blur(25px);
+      padding: 8px 20px; border-radius: 50px;
+      margin: 20px auto 14px;
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.7);
       width: fit-content;
-      flex-wrap: wrap;
-      justify-content: center;
     }
     .switch-btn {
-      padding: 10px 22px;
-      border-radius: 30px;
-      border: none;
-      background: transparent;
-      color: #aaa;
-      font-weight: 700;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: all 0.25s;
-      letter-spacing: 1px;
-      font-family: inherit;
-      white-space: nowrap;
+      padding: 10px 28px; border-radius: 32px;
+      border: none; background: transparent;
+      color: #aaa; font-weight: 700; font-size: 1rem;
+      cursor: pointer; transition: all 0.3s; letter-spacing: 1.5px;
+      font-family: inherit; position: relative;
+      display: flex; align-items: center; gap: 6px;
     }
-    .switch-btn.active {
-      background: rgba(255,255,255,0.1);
-      color: white;
-      box-shadow: 0 0 16px rgba(255,255,200,0.15);
+    .switch-btn.active.genesis {
+      background: rgba(245,200,78,0.15); color: #ffe7a0;
+      box-shadow: 0 0 30px rgba(245,200,78,0.3);
+      border: 1px solid rgba(245,200,78,0.5);
     }
-    .switch-btn.genesis {
-      color: #f0c060;
+    .switch-btn.active.honor {
+      background: rgba(255,126,179,0.18); color: #ffc0d0;
+      box-shadow: 0 0 30px rgba(255,126,179,0.3);
+      border: 1px solid rgba(255,126,179,0.5);
     }
-    .switch-btn.genesis.active {
-      background: rgba(240,192,96,0.2);
-      border: 1px solid rgba(240,192,96,0.45);
-    }
-    .switch-btn.honor {
-      color: #ff80b0;
-    }
-    .switch-btn.honor.active {
-      background: rgba(255,128,176,0.2);
-      border: 1px solid rgba(255,128,176,0.5);
+    .switch-btn:hover:not(.active) {
+      color: #ddd; background: rgba(255,255,255,0.05);
     }
 
-    /* 主面板容器 */
     .app-container {
-      position: relative;
-      z-index: 1;
-      max-width: 900px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 8px 16px 24px;
+      position: relative; z-index: 2;
+      max-width: 960px; width: 100%; margin: 0 auto;
+      padding: 8px 20px 30px;
     }
 
-    /* 两个游戏面板切换显示 */
-    .game-panel {
-      display: none;
+    .game-panel { display: none; }
+    .game-panel.active { 
+      display: block; 
+      animation: fadeSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1); 
     }
-    .game-panel.active {
-      display: block;
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* 通用卡片样式 */
-    .top-bar, .up-showcase, .pity-progress, .history-section, .crystal-stats {
-      background: var(--bg-panel);
-      border-radius: 18px;
-      padding: 14px 20px;
-      margin-bottom: 16px;
-      border: 1px solid rgba(255,255,255,0.06);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    /* 毛玻璃卡片 */
+    .glass-card {
+      background: rgba(14,14,28,0.65);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.05);
+      transition: transform 0.2s, border-color 0.3s;
+    }
+    .glass-card:hover {
+      border-color: rgba(255,255,255,0.15);
     }
 
     .top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .currency-display {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 700;
-      color: #fff;
-      background: rgba(94,197,232,0.12);
-      padding: 7px 18px;
-      border-radius: 24px;
-    }
-    .btn-sm {
-      padding: 7px 14px;
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(255,255,255,0.05);
-      color: #ccc;
-      cursor: pointer;
-      font-size: 0.8rem;
-      transition: 0.2s;
-      font-family: inherit;
-    }
-    .btn-sm:hover {
-      background: rgba(255,255,255,0.15);
-      color: white;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 14px;
     }
 
-    .banner-area {
-      text-align: center;
-      margin-bottom: 16px;
+    .currency-badge {
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 700; color: #fff; padding: 8px 22px;
+      border-radius: 30px; background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      font-size: 1rem;
     }
+    .gem-icon, .diamond-icon-sm {
+      width: 32px; height: 32px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+    .gem-icon {
+      background: linear-gradient(135deg, #5ec5e8, #2878a0);
+      box-shadow: 0 0 18px rgba(94,197,232,0.6);
+    }
+    .diamond-icon-sm {
+      background: linear-gradient(135deg, #40c8f0, #1a6090);
+      box-shadow: 0 0 18px #40c8f0;
+    }
+
+    .btn-sm {
+      padding: 8px 18px; border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.04);
+      color: #ccc; cursor: pointer; font-size: 0.85rem;
+      transition: all 0.25s; font-family: inherit;
+      backdrop-filter: blur(8px);
+    }
+    .btn-sm:hover { background: rgba(255,255,255,0.18); color: white; border-color: rgba(255,255,255,0.45); transform: translateY(-1px); }
+
     .banner-title {
-      font-size: 2rem;
-      font-weight: 900;
-      letter-spacing: 4px;
-      background: linear-gradient(180deg, #ffe9b0 0%, #d4a040 50%, #8a6020 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-size: 2.4rem; font-weight: 900; letter-spacing: 8px;
+      background: linear-gradient(180deg, #fff8e0 0%, #e4b644 45%, #7a5818 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 6px;
+      filter: drop-shadow(0 0 20px rgba(230,180,60,0.5));
     }
-    .banner-subtitle {
-      font-size: 0.8rem;
-      color: var(--text-dim);
-      letter-spacing: 3px;
+    .banner-sub {
+      font-size: 0.85rem; color: #a0947a; letter-spacing: 5px; margin-bottom: 10px;
+    }
+
+    /* 角色展示卡片 */
+    .character-showcase {
+      display: flex; align-items: center; gap: 24px;
+    }
+    .character-img {
+      width: 90px; height: 90px; border-radius: 50%;
+      background: linear-gradient(135deg, #2a1a3a, #4a3050);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3.2rem; border: 3px solid var(--gold);
+      box-shadow: 0 0 35px rgba(245,200,78,0.45);
+      position: relative;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none"><circle cx="50" cy="45" r="30" fill="%23f0c060" opacity="0.3"/><circle cx="35" cy="40" r="8" fill="%23fff"/><circle cx="65" cy="40" r="8" fill="%23fff"/><path d="M40 55 Q50 65 60 55" stroke="%23fff" stroke-width="4" fill="none"/></svg>');
+      background-size: cover;
+    }
+    .character-name {
+      font-size: 1.3rem; font-weight: 700; color: white;
+    }
+    .character-stars {
+      color: var(--star-5); font-size: 1.1rem; letter-spacing: 2px;
     }
 
     .wish-buttons {
-      display: flex;
-      gap: 14px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin: 18px 0;
+      display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+      margin: 28px 0;
     }
     .btn-wish {
-      padding: 14px 32px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      letter-spacing: 1px;
-      border: none;
-      border-radius: 30px;
-      cursor: pointer;
-      background: linear-gradient(135deg, #4a4a6a, #3a3a55);
-      color: white;
-      transition: all 0.3s;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-      font-family: inherit;
+      padding: 18px 38px; font-weight: 700; font-size: 1.2rem;
+      border: none; border-radius: 40px; cursor: pointer;
+      color: white; letter-spacing: 1.5px;
+      background: linear-gradient(135deg, #3a3a5a, #202040);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.1);
+      transition: all 0.3s; font-family: inherit;
+      position: relative; overflow: hidden;
     }
-    .btn-wish:active { transform: scale(0.96); }
-    .btn-wish:disabled { opacity: 0.4; pointer-events: none; }
+    .btn-wish::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25) 0%, transparent 60%);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .btn-wish:hover::before { opacity: 1; }
+    .btn-wish:active { transform: scale(0.93); }
+    .btn-wish:disabled { opacity: 0.4; pointer-events: none; filter: grayscale(0.4); }
 
-    /* 历史记录 */
+    .progress-section {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .progress-label {
+      display: flex; justify-content: space-between;
+      font-size: 0.9rem; color: #bbb; font-weight: 600;
+    }
+    .progress-bar {
+      height: 12px; background: rgba(255,255,255,0.06);
+      border-radius: 8px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 8px;
+      transition: width 0.35s ease;
+      box-shadow: 0 0 18px currentColor;
+    }
+
     .history-list {
-      max-height: 200px;
-      overflow-y: auto;
-      font-size: 0.8rem;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
+      max-height: 200px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 8px;
+      font-size: 0.85rem; scrollbar-width: thin;
     }
     .history-item {
-      display: flex;
-      gap: 8px;
-      align-items: center;
+      display: flex; align-items: center; gap: 12px;
+      padding: 8px 12px; border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      transition: background 0.2s;
     }
+    .history-item:hover { background: rgba(255,255,255,0.07); }
 
-    /* 王者荣耀水晶专属 */
-    .crystal-main {
-      background: radial-gradient(circle at 30% 30%, #2a1a30, #120a1a);
-      border: 1px solid rgba(255,128,176,0.35);
-    }
-    .crystal-amount {
-      background: rgba(255,128,176,0.15);
-      border: 1px solid #ff80b0;
-    }
-    .diamond-icon {
-      background: linear-gradient(135deg, #40c8f0, #1a6090);
-      border-radius: 6px;
-      transform: rotate(45deg);
-      width: 26px;
-      height: 26px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 14px #40c8f0;
-    }
-    .diamond-icon::after {
-      content: '💎';
-      transform: rotate(-45deg);
-      font-size: 14px;
-    }
-    .crystal-progress-box {
-      background: #1e1428;
-      border-radius: 20px;
-      padding: 12px 16px;
-    }
-    .lucky-bar {
-      height: 10px;
-      background: #2a1a35;
-      border-radius: 5px;
-      overflow: hidden;
-      margin: 8px 0;
-    }
-    .lucky-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #ff80b0, #ff4080);
-      box-shadow: 0 0 14px #ff4080;
-      transition: width 0.2s ease;
-    }
-    .crystal-result-icon {
-      font-size: 2.8rem;
-      filter: drop-shadow(0 0 14px #ff80b0);
-    }
-
-    /* 弹窗等复用 */
+    /* 弹窗升级 */
     .modal-overlay {
-      position: fixed;
-      top:0;left:0;width:100%;height:100%;
-      background: rgba(0,0,0,0.75);
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      backdrop-filter: blur(5px);
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8); backdrop-filter: blur(16px);
+      z-index: 300; display: flex; align-items: center; justify-content: center;
+      animation: fadeIn 0.25s;
     }
     .modal-content {
-      background: var(--bg-card);
-      border-radius: 22px;
-      padding: 20px;
-      max-width: 500px;
-      width: 90%;
-      border: 1px solid rgba(255,255,255,0.15);
-      animation: slideUp 0.3s ease;
+      background: rgba(18,18,36,0.9); backdrop-filter: blur(24px);
+      border-radius: 30px; padding: 28px; max-width: 580px; width: 90%;
+      border: 1px solid rgba(255,255,255,0.2);
+      box-shadow: 0 35px 60px rgba(0,0,0,0.8);
+      animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    @keyframes slideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.9) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
     }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
     .toast {
       position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-      background: #222; color: white; padding: 12px 24px; border-radius: 24px;
-      z-index: 300; animation: toastIn 0.3s;
+      background: rgba(20,20,35,0.9); backdrop-filter: blur(14px);
+      color: white; padding: 14px 32px; border-radius: 34px;
+      z-index: 400; border: 1px solid rgba(255,255,255,0.25);
+      animation: toastPop 0.35s; font-weight: 600;
     }
-    @keyframes toastIn {
-      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    @keyframes toastPop {
+      from { opacity: 0; transform: translateX(-50%) translateY(24px); }
       to { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
-    @media (max-width: 500px) {
-      .switch-btn { padding: 8px 14px; font-size: 0.8rem; }
+
+    /* 响应式 */
+    @media (max-width: 600px) {
+      .character-img { width: 60px; height: 60px; font-size: 2rem; }
+      .btn-wish { padding: 14px 24px; font-size: 1rem; }
     }
   </style>
 </head>
 <body>
   <div class="stars-container" id="starsContainer"></div>
+  <div class="aurora-bg"></div>
 
-  <!-- 游戏切换器 -->
   <div class="game-switcher">
-    <button class="switch-btn genesis active" id="switchGenshin">✨ 原神 · 祈愿</button>
-    <button class="switch-btn honor" id="switchHonor">👑 王者 · 荣耀水晶</button>
+    <button class="switch-btn genesis active" id="switchGenshin"><span>✨</span> 原神 · 祈愿</button>
+    <button class="switch-btn honor" id="switchHonor"><span>👑</span> 王者 · 荣耀水晶</button>
   </div>
 
-  <div class="app-container" id="appContainer">
-    <!-- ========= 原神面板 ========= -->
+  <div class="app-container">
+    <!-- 原神面板 -->
     <div class="game-panel active" id="panelGenshin">
-      <div class="top-bar">
-        <div class="currency-display"><div class="primogem-icon"></div><span id="primogemCount">9600</span></div>
+      <div class="glass-card top-bar">
+        <div class="currency-badge"><div class="gem-icon">✦</div> <span id="primogemCount">9600</span></div>
         <button class="btn-sm" onclick="addGenshinCurrency(160)">+160</button>
         <button class="btn-sm" onclick="addGenshinCurrency(1600)">+1600</button>
-        <div><span>五星保底:</span> <strong id="pity5Display">0</strong>/90</div>
+        <div><span style="color:#aaa;">五星保底</span> <strong id="pity5Display" style="color:#fcd34d;">0</strong>/90</div>
       </div>
-      <div class="banner-area"><div class="banner-title">星域祈愿</div><div class="banner-subtitle">GENSHIN WISH</div></div>
-      <div class="up-showcase" style="display:flex; align-items:center; gap:16px;">
-        <div style="font-size:3rem;">✨🌟</div>
-        <div><h3>荧辉·星落</h3><div style="color:#f0c060;">★★★★★ UP</div></div>
+      <div style="text-align:center; margin:20px 0;">
+        <div class="banner-title">星域祈愿</div>
+        <div class="banner-sub">✦ GENSHIN WISH SIMULATOR ✦</div>
       </div>
-      <div class="pity-progress">
-        <div>五星进度 <span id="pity5Text">0</span>/90</div>
-        <div class="lucky-bar"><div class="lucky-fill" id="pity5Bar" style="background:linear-gradient(90deg,#f0c060,#ffaa00);"></div></div>
+      <div class="glass-card character-showcase">
+        <div class="character-img">✨🌟</div>
+        <div>
+          <div class="character-name">荧辉·星落</div>
+          <div class="character-stars">★★★★★</div>
+          <div style="color:#f5c84e; font-size:0.8rem; margin-top:4px;">⬆ UP 概率提升</div>
+        </div>
+      </div>
+      <div class="glass-card progress-section">
+        <div class="progress-label"><span>⭐ 五星进度</span><span id="pity5Text">0 / 90</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="pity5Bar" style="width:0%; background:#f5c84e;"></div></div>
       </div>
       <div class="wish-buttons">
-        <button class="btn-wish" onclick="performGenshinWish(1)">祈愿×1 (160)</button>
-        <button class="btn-wish" style="background:linear-gradient(135deg,#6a4a8a,#4a3070);" onclick="performGenshinWish(10)">祈愿×10 (1600)</button>
+        <button class="btn-wish" onclick="performGenshinWish(1)">祈愿×1 <span style="opacity:0.7; font-size:0.9rem;">(160)</span></button>
+        <button class="btn-wish" style="background:linear-gradient(135deg,#5a3880,#302050);" onclick="performGenshinWish(10)">祈愿×10 <span style="opacity:0.7; font-size:0.9rem;">(1600)</span></button>
       </div>
-      <div class="history-section"><h4>📜 原神记录</h4><div class="history-list" id="genshinHistory">暂无记录</div></div>
+      <div class="glass-card"><h4 style="margin-bottom:12px; color:white;">📜 原神记录</h4><div class="history-list" id="genshinHistory">暂无记录</div></div>
     </div>
 
-    <!-- ========= 王者荣耀水晶面板 ========= -->
+    <!-- 王者面板 -->
     <div class="game-panel" id="panelHonor">
-      <div class="top-bar crystal-main">
-        <div class="currency-display crystal-amount"><span>💎</span> <span id="diamondCount">5000</span></div>
+      <div class="glass-card top-bar" style="border-color: rgba(255,126,179,0.35);">
+        <div class="currency-badge"><div class="diamond-icon-sm">💎</div> <span id="diamondCount">5000</span></div>
         <button class="btn-sm" onclick="addHonorCurrency(270)">+270</button>
         <button class="btn-sm" onclick="addHonorCurrency(1350)">+1350</button>
-        <div><span>幸运值:</span> <strong id="luckyValueDisplay">0</strong>/361</div>
+        <div><span style="color:#aaa;">幸运值</span> <strong id="luckyValueDisplay" style="color:#ff7eb3;">0</strong>/361</div>
       </div>
-      <div class="banner-area">
-        <div class="banner-title" style="background: linear-gradient(180deg, #ffc0d0, #ff80b0, #b0306a); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">荣耀水晶</div>
-        <div class="banner-subtitle">HONOR CRYSTAL</div>
+      <div style="text-align:center; margin:20px 0;">
+        <div class="banner-title" style="background:linear-gradient(180deg,#ffe0ec,#ff7eb3,#a03060); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">荣耀水晶</div>
+        <div class="banner-sub">👑 HONOR CRYSTAL</div>
       </div>
-      <div class="crystal-progress-box">
-        <div style="display: flex; justify-content: space-between;">
-          <span>🔮 幸运值</span><span id="luckyText">0 / 361</span>
-        </div>
-        <div class="lucky-bar"><div class="lucky-fill" id="luckyBarFill" style="background:#ff4080;"></div></div>
-        <div style="font-size:0.7rem; color:#aaa;">保底361必出荣耀水晶</div>
+      <div class="glass-card progress-section" style="border-color:rgba(255,126,179,0.25);">
+        <div class="progress-label"><span>🔮 幸运值</span><span id="luckyText">0 / 361</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="luckyBarFill" style="width:0%; background:#ff4080;"></div></div>
       </div>
       <div class="wish-buttons">
         <button class="btn-wish" style="background:#b0306a;" onclick="performHonorDraw(1)">抽1次 (60💎)</button>
         <button class="btn-wish" style="background:linear-gradient(135deg,#c04080,#802050);" onclick="performHonorDraw(5)">抽5次 (270💎)</button>
       </div>
-      <div class="history-section"><h4>👑 水晶记录</h4><div class="history-list" id="honorHistory">暂无抽奖</div></div>
+      <div class="glass-card"><h4 style="margin-bottom:12px; color:white;">👑 水晶记录</h4><div class="history-list" id="honorHistory">暂无抽奖</div></div>
     </div>
   </div>
 
@@ -401,247 +365,164 @@
   <div id="fxContainer"></div>
 
   <script>
-    (function() {
-      // ---------- 星空背景 ----------
-      function createStars() {
-        const container = document.getElementById('starsContainer');
-        for (let i=0;i<70;i++) {
-          const star = document.createElement('div');
-          star.className = 'star-particle';
-          star.style.left = Math.random()*100+'%';
-          star.style.top = Math.random()*100+'%';
-          star.style.width = (1+Math.random()*2.5)+'px';
-          star.style.height = star.style.width;
-          star.style.setProperty('--dur', (2+Math.random()*6)+'s');
-          star.style.setProperty('--delay', Math.random()*5+'s');
-          container.appendChild(star);
-        }
+    (() => {
+      // 星空生成
+      const starsCont = document.getElementById('starsContainer');
+      for (let i=0; i<90; i++) {
+        const s = document.createElement('div'); s.className='star-particle';
+        s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%';
+        s.style.width=(1.5+Math.random()*3.5)+'px'; s.style.height=s.style.width;
+        s.style.setProperty('--dur', (2.5+Math.random()*8)+'s');
+        s.style.setProperty('--delay', Math.random()*7+'s');
+        starsCont.appendChild(s);
       }
-      createStars();
 
-      // ---------- 全局切换逻辑 ----------
-      const switchGenshin = document.getElementById('switchGenshin');
-      const switchHonor = document.getElementById('switchHonor');
-      const panelGenshin = document.getElementById('panelGenshin');
-      const panelHonor = document.getElementById('panelHonor');
-
-      function setActivePanel(panelName) {
-        if (panelName === 'genshin') {
-          panelGenshin.classList.add('active');
-          panelHonor.classList.remove('active');
-          switchGenshin.classList.add('active');
-          switchHonor.classList.remove('active');
+      // 切换
+      const switchG = document.getElementById('switchGenshin');
+      const switchH = document.getElementById('switchHonor');
+      const panelG = document.getElementById('panelGenshin');
+      const panelH = document.getElementById('panelHonor');
+      function setPanel(g) {
+        if(g) {
+          panelG.classList.add('active'); panelH.classList.remove('active');
+          switchG.classList.add('active'); switchH.classList.remove('active');
         } else {
-          panelHonor.classList.add('active');
-          panelGenshin.classList.remove('active');
-          switchHonor.classList.add('active');
-          switchGenshin.classList.remove('active');
+          panelH.classList.add('active'); panelG.classList.remove('active');
+          switchH.classList.add('active'); switchG.classList.remove('active');
         }
       }
-      switchGenshin.addEventListener('click', ()=> setActivePanel('genshin'));
-      switchHonor.addEventListener('click', ()=> setActivePanel('honor'));
+      switchG.onclick = ()=> setPanel(true);
+      switchH.onclick = ()=> setPanel(false);
 
-      // ---------- 原神抽卡状态 ----------
-      const genshinState = {
-        primogems: 9600,
-        pity5: 0,
-        pity4: 0,
-        guaranteed: false,
-        totalWishes: 0,
-        history: []
-      };
-      const fiveStars = [
-        { name:'荧辉·星落', icon:'✨🌟', up:true },
-        { name:'墨渊·暗影', icon:'🌑💜', up:false },
-        { name:'风翎·青岚', icon:'🍃💨', up:false },
-        { name:'霜落·雪月', icon:'❄️🌙', up:false }
-      ];
-      const fourStars = [
-        { name:'苍林·翠微', icon:'🌿' }, { name:'流云·白羽', icon:'☁️' }
-      ];
-      const threeStars = [
-        { name:'铁剑', icon:'🗡️' }, { name:'猎弓', icon:'🏹' }
-      ];
+      // 原神状态
+      const gs = { primogems:9600, pity5:0, pity4:0, guaranteed:false, history:[] };
+      const fiveS = [{name:'荧辉·星落',icon:'✨🌟',up:true},{name:'墨渊·暗影',icon:'🌑💜',up:false},{name:'风翎·青岚',icon:'🍃💨',up:false},{name:'霜落·雪月',icon:'❄️🌙',up:false}];
+      const fourS = [{name:'苍林·翠微',icon:'🌿'},{name:'流云·白羽',icon:'☁️'}];
+      const threeS = [{name:'铁剑',icon:'🗡️'},{name:'猎弓',icon:'🏹'}];
 
       function updateGenshinUI() {
-        document.getElementById('primogemCount').textContent = genshinState.primogems;
-        document.getElementById('pity5Display').textContent = genshinState.pity5;
-        document.getElementById('pity5Text').textContent = genshinState.pity5;
-        const bar = document.getElementById('pity5Bar');
-        bar.style.width = Math.min(100, (genshinState.pity5/90)*100)+'%';
-        
-        const historyDiv = document.getElementById('genshinHistory');
-        if (genshinState.history.length===0) historyDiv.innerHTML = '暂无记录';
-        else historyDiv.innerHTML = genshinState.history.slice(0,20).map(h=> 
-          `<div class="history-item">${h.icon} ${h.name} (${'★'.repeat(h.rarity)})</div>`).join('');
+        document.getElementById('primogemCount').textContent = gs.primogems;
+        document.getElementById('pity5Display').textContent = gs.pity5;
+        document.getElementById('pity5Text').textContent = gs.pity5 + ' / 90';
+        document.getElementById('pity5Bar').style.width = Math.min(100,(gs.pity5/90)*100)+'%';
+        const hist = document.getElementById('genshinHistory');
+        hist.innerHTML = gs.history.length ? gs.history.slice(0,20).map(h=>`<div class="history-item">${h.icon} ${h.name} ${'★'.repeat(h.rarity)}</div>`).join('') : '暂无记录';
       }
 
-      function genshinSinglePull() {
+      function singleGenshin() {
         let rarity;
-        const p5 = genshinState.pity5>=89 ? 1.0 : (genshinState.pity5>=73 ? 0.006+(genshinState.pity5-72)*0.06 : 0.006);
-        if (Math.random() < p5) rarity=5;
-        else if (Math.random() < 0.051 || genshinState.pity4>=9) rarity=4;
+        const p5 = gs.pity5>=89?1:(gs.pity5>=73?0.006+(gs.pity5-72)*0.06:0.006);
+        if(Math.random()<p5) rarity=5;
+        else if(Math.random()<0.051||gs.pity4>=9) rarity=4;
         else rarity=3;
-
         let item;
-        if (rarity===5) {
-          const up = genshinState.guaranteed ? true : Math.random()<0.5;
-          genshinState.guaranteed = !up;
-          item = up ? {...fiveStars.find(f=>f.up)} : {...fiveStars.filter(f=>!f.up)[Math.floor(Math.random()*4)]};
-          genshinState.pity5=0; genshinState.pity4=0;
-        } else if (rarity===4) {
-          item = {...fourStars[Math.floor(Math.random()*fourStars.length)], rarity:4};
-          genshinState.pity5++; genshinState.pity4=0;
+        if(rarity===5){
+          const up = gs.guaranteed?true:Math.random()<0.5;
+          gs.guaranteed = !up;
+          item = up ? {...fiveS.find(f=>f.up)} : {...fiveS.filter(f=>!f.up)[Math.floor(Math.random()*3)]};
+          gs.pity5=0; gs.pity4=0;
+        } else if(rarity===4){
+          item = {...fourS[Math.floor(Math.random()*fourS.length)], rarity:4};
+          gs.pity5++; gs.pity4=0;
         } else {
-          item = {...threeStars[Math.floor(Math.random()*threeStars.length)], rarity:3};
-          genshinState.pity5++; genshinState.pity4++;
+          item = {...threeS[Math.floor(Math.random()*threeS.length)], rarity:3};
+          gs.pity5++; gs.pity4++;
         }
-        genshinState.history.unshift({...item});
-        if(genshinState.history.length>30) genshinState.history.pop();
+        gs.history.unshift(item); if(gs.history.length>40) gs.history.pop();
         return item;
       }
 
-      window.performGenshinWish = function(count) {
-        const cost = count*160;
-        if(genshinState.primogems < cost) return showToast('原石不足');
-        genshinState.primogems -= cost;
-        const results = [];
-        for(let i=0;i<count;i++) results.push(genshinSinglePull());
+      window.performGenshinWish = (count) => {
+        if(gs.primogems < count*160) return showToast('原石不足');
+        gs.primogems -= count*160;
+        const res = []; for(let i=0;i<count;i++) res.push(singleGenshin());
         updateGenshinUI();
-        if(results.some(r=>r.rarity===5)) spawnGoldenBeam();
-        showResultModal(results, 'genshin');
+        if(res.some(r=>r.rarity===5)) spawnGoldBeam();
+        showResultModal(res,'genshin');
       };
+      window.addGenshinCurrency = (a)=>{ gs.primogems+=a; updateGenshinUI(); };
 
-      window.addGenshinCurrency = (amt)=>{ genshinState.primogems+=amt; updateGenshinUI(); };
-
-      // ---------- 王者荣耀水晶状态 ----------
-      const honorState = {
-        diamonds: 5000,
-        lucky: 0,
-        history: []
-      };
+      // 王者状态
+      const hs = { diamonds:5000, lucky:0, history:[] };
       function updateHonorUI() {
-        document.getElementById('diamondCount').textContent = honorState.diamonds;
-        document.getElementById('luckyValueDisplay').textContent = honorState.lucky;
-        document.getElementById('luckyText').textContent = honorState.lucky + ' / 361';
-        document.getElementById('luckyBarFill').style.width = (honorState.lucky/361*100)+'%';
-        
-        const histDiv = document.getElementById('honorHistory');
-        if(honorState.history.length===0) histDiv.innerHTML = '暂无抽奖';
-        else histDiv.innerHTML = honorState.history.slice(0,20).map(h=> 
-          `<div class="history-item">🔮 ${h.result} (幸运${h.lucky})</div>`).join('');
+        document.getElementById('diamondCount').textContent = hs.diamonds;
+        document.getElementById('luckyValueDisplay').textContent = hs.lucky;
+        document.getElementById('luckyText').textContent = hs.lucky+' / 361';
+        document.getElementById('luckyBarFill').style.width = (hs.lucky/361*100)+'%';
+        const hist = document.getElementById('honorHistory');
+        hist.innerHTML = hs.history.length ? hs.history.slice(0,20).map(h=>`<div class="history-item">🔮 ${h.text} (幸运${h.lucky})</div>`).join('') : '暂无抽奖';
       }
-
-      function honorSingleDraw() {
-        honorState.lucky++;
-        let isCrystal = false;
-        if (honorState.lucky >= 361) {
-          isCrystal = true;
-        } else {
-          // 平均概率约0.8%，随幸运值微增
-          const prob = 0.008 + (honorState.lucky * 0.00008);
-          isCrystal = Math.random() < prob;
-        }
-        
-        let resultText = '普通物品';
-        if (isCrystal) {
-          resultText = '👑 荣耀水晶';
-          honorState.lucky = 0; // 重置幸运值
-          spawnCrystalEffect();
-        } else {
-          const items = ['皮肤碎片','英雄碎片','钻石×28','铭文碎片','战令币'];
-          resultText = items[Math.floor(Math.random()*items.length)];
-        }
-        honorState.history.unshift({ result: resultText, lucky: honorState.lucky });
-        if(honorState.history.length>30) honorState.history.pop();
-        return { crystal: isCrystal, text: resultText };
+      function singleHonor() {
+        hs.lucky++;
+        let crystal = false;
+        if(hs.lucky>=361) crystal=true;
+        else crystal = Math.random() < (0.008 + hs.lucky*0.00008);
+        let text = '普通物品';
+        if(crystal) { text='👑 荣耀水晶'; hs.lucky=0; spawnCrystalFX(); }
+        else { const arr=['皮肤碎片','英雄碎片','钻石×28','铭文碎片']; text=arr[Math.floor(Math.random()*arr.length)]; }
+        hs.history.unshift({text, lucky: hs.lucky}); if(hs.history.length>40) hs.history.pop();
+        return {crystal, text};
       }
-
-      window.performHonorDraw = function(count) {
-        const cost = count===5 ? 270 : 60;
-        if(honorState.diamonds < cost) return showToast('钻石不足');
-        honorState.diamonds -= cost;
-        const draws = [];
-        for(let i=0;i<count;i++) draws.push(honorSingleDraw());
+      window.performHonorDraw = (count) => {
+        const cost = count===5?270:60;
+        if(hs.diamonds<cost) return showToast('钻石不足');
+        hs.diamonds -= cost;
+        const draws = []; for(let i=0;i<count;i++) draws.push(singleHonor());
         updateHonorUI();
-        const gotCrystal = draws.some(d=>d.crystal);
-        if(gotCrystal) {
-          showToast('🎉 获得荣耀水晶！');
-        }
-        showHonorResultModal(draws);
+        showHonorModal(draws);
       };
+      window.addHonorCurrency = (a)=>{ hs.diamonds+=a; updateHonorUI(); };
 
-      window.addHonorCurrency = (amt)=>{ honorState.diamonds+=amt; updateHonorUI(); };
-
-      // ---------- 特效与弹窗 ----------
-      function spawnGoldenBeam() {
+      function spawnGoldBeam() {
         const fx = document.getElementById('fxContainer');
-        const beam = document.createElement('div');
-        beam.style.position='fixed'; beam.style.top=0; beam.style.left='50%';
-        beam.style.width='120px'; beam.style.height='100%'; beam.style.background='rgba(255,215,0,0.3)';
-        beam.style.transform='translateX(-50%)'; beam.style.zIndex=250;
-        fx.appendChild(beam);
-        setTimeout(()=>beam.remove(), 700);
+        const d = document.createElement('div');
+        d.style.cssText='position:fixed;top:0;left:50%;width:120px;height:100%;background:rgba(255,230,100,0.3);transform:translateX(-50%);z-index:350;animation:beamAnim 0.8s ease-out; border-radius:20px;';
+        fx.appendChild(d); setTimeout(()=>d.remove(),900);
       }
-      function spawnCrystalEffect() {
+      function spawnCrystalFX() {
         const fx = document.getElementById('fxContainer');
-        const el = document.createElement('div');
-        el.style.position='fixed'; el.style.top='40%'; el.style.left='50%';
-        el.innerHTML='💖👑✨'; el.style.fontSize='4rem'; el.style.transform='translate(-50%,-50%)';
-        el.style.zIndex=260; fx.appendChild(el);
-        setTimeout(()=>el.remove(), 900);
+        const d = document.createElement('div');
+        d.innerHTML='💖👑✨'; d.style.cssText='position:fixed;top:40%;left:50%;font-size:6rem;transform:translate(-50%,-50%);z-index:360;animation:crystalPulse 0.7s ease-out;';
+        fx.appendChild(d); setTimeout(()=>d.remove(),1000);
       }
 
-      function showResultModal(results, game) {
-        const modal = document.createElement('div');
-        modal.className='modal-overlay';
-        let html = '';
-        if(game==='genshin'){
-          results.forEach(r=>{
-            html += `<div style="display:flex; gap:12px; align-items:center; margin:8px 0;">${r.icon} ${r.name} (${'★'.repeat(r.rarity||5)})</div>`;
-          });
-        }
-        modal.innerHTML = `<div class="modal-content"><h3>祈愿结果</h3>${html}<button class="btn-sm" style="margin-top:12px;">关闭</button></div>`;
+      function showResultModal(results,game) {
+        const modal = document.createElement('div'); modal.className='modal-overlay';
+        let html = '<div class="modal-content"><h3 style="color:white; margin-bottom:16px;">✨ 祈愿结果</h3>';
+        results.forEach(r=>{ html+=`<div style="margin:8px 0; font-size:1rem;">${r.icon||''} ${r.name||r.text} ${r.rarity?'★'.repeat(r.rarity):''}</div>`; });
+        html+='<button class="btn-sm" style="margin-top:18px; width:100%;">关闭</button></div>';
+        modal.innerHTML=html; document.body.appendChild(modal);
+        modal.querySelector('button').onclick=()=>modal.remove();
+        modal.onclick=(e)=>{if(e.target===modal)modal.remove();};
+      }
+      function showHonorModal(draws) {
+        const modal = document.createElement('div'); modal.className='modal-overlay';
+        let items = draws.map(d=>`<div style="font-size:1rem;">🔮 ${d.text}</div>`).join('');
+        modal.innerHTML=`<div class="modal-content"><h3 style="color:white;">抽奖结果</h3>${items}<button class="btn-sm" style="margin-top:18px; width:100%;">确定</button></div>`;
         document.body.appendChild(modal);
-        modal.querySelector('button').onclick = ()=> modal.remove();
-        modal.addEventListener('click', (e)=>{ if(e.target===modal) modal.remove(); });
+        modal.querySelector('button').onclick=()=>modal.remove();
+        modal.onclick=(e)=>{if(e.target===modal)modal.remove();};
+      }
+      function showToast(m) {
+        const t = document.createElement('div'); t.className='toast'; t.textContent=m;
+        document.body.appendChild(t); setTimeout(()=>t.remove(),2200);
       }
 
-      function showHonorResultModal(draws) {
-        const modal = document.createElement('div');
-        modal.className='modal-overlay';
-        let items = draws.map(d=>`<div>🔮 ${d.text}</div>`).join('');
-        modal.innerHTML = `<div class="modal-content"><h3>抽奖结果</h3>${items}<button class="btn-sm" style="margin-top:12px;">确定</button></div>`;
-        document.body.appendChild(modal);
-        modal.querySelector('button').onclick = ()=> modal.remove();
-        modal.addEventListener('click', (e)=>{ if(e.target===modal) modal.remove(); });
-      }
-
-      function showToast(msg) {
-        const t = document.createElement('div'); t.className='toast'; t.textContent=msg;
-        document.body.appendChild(t);
-        setTimeout(()=>t.remove(), 2000);
-      }
-
-      // 初始化UI
-      updateGenshinUI();
-      updateHonorUI();
-      // 默认显示原神面板
-      setActivePanel('genshin');
-
-      // 键盘快捷键 1/0 仅对当前活动面板有效
-      document.addEventListener('keydown', (e)=>{
-        if(e.target.tagName==='INPUT') return;
-        if(panelGenshin.classList.contains('active')){
+      updateGenshinUI(); updateHonorUI();
+      document.addEventListener('keydown',(e)=>{
+        if(panelG.classList.contains('active')) {
           if(e.key==='1') performGenshinWish(1);
           else if(e.key==='0') performGenshinWish(10);
-        } else if(panelHonor.classList.contains('active')){
+        } else if(panelH.classList.contains('active')) {
           if(e.key==='1') performHonorDraw(1);
           else if(e.key==='5') performHonorDraw(5);
         }
       });
-
     })();
   </script>
+  <style>
+    @keyframes beamAnim { 0%{opacity:0;transform:translateX(-50%) scaleY(0.4);} 35%{opacity:1;} 100%{opacity:0;transform:translateX(-50%) scaleY(1);} }
+    @keyframes crystalPulse { 0%{transform:translate(-50%,-50%) scale(0.5); opacity:0;} 50%{transform:translate(-50%,-50%) scale(1.3); opacity:1;} 100%{transform:translate(-50%,-50%) scale(1); opacity:1;} }
+  </style>
 </body>
 </html>
